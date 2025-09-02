@@ -1,0 +1,43 @@
+// Corrected section.scss
+@use "../../../variables" as *;
+
+.cus-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; // ADDED: Ensure proper flex layout
+
+  .header {
+    width: 100%;
+    @extend %flex-style;
+    justify-content: space-between !important;
+    margin-bottom: 1rem;
+    flex-shrink: 0; // Prevent header from shrinking
+    height: auto; // ADDED: Let header size itself
+
+    .view-more {
+      color: var(--text-color);
+      text-decoration: none;
+      @extend %flex-style;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      @extend %after-effects;
+
+      &:hover {
+        color: var(--accent-color);
+      }
+    }
+  }
+
+  .section-content {
+    width: 100%;
+    flex: 1; // CHANGED: Use flex: 1 instead of calc() for better height management
+    overflow: visible; // CHANGED: Allow children to handle their own overflow
+
+    // Ensure Bootstrap row takes full height
+    .row {
+      height: 100%;
+      min-height: 0; // ADDED: Allow flex items to shrink below content size
+    }
+  }
+}

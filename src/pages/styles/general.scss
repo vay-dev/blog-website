@@ -1,0 +1,73 @@
+// Updated general.scss - Shared styles for all news sections
+
+// Base wrapper styles for all news sections
+#worldnews-wrapper,
+#technology-wrapper,
+#business-wrapper,
+#entertainment-wrapper,
+#health-wrapper {
+  // Ensure the section takes full height
+  // Fix Bootstrap row margins affecting height
+}
+
+// Main card container (left side) - shared across all sections
+.main-card-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; // Keep overflow hidden on main card to prevent it from scrolling
+}
+
+// Trending cards container (right side) - shared across all sections
+.trending-cards-container {
+  height: 400px;
+  overflow-y: auto !important; // Force scrollbar with !important
+  padding-right: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  // Force scrollbar to always show (for debugging)
+  scrollbar-gutter: stable;
+
+  // Enhanced scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 25px;
+
+    &:hover {
+      background: var(--accent-color-hover, var(--accent-color));
+    }
+  }
+
+  // For Firefox
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) rgba(255, 255, 255, 0.1);
+
+  .trending-card {
+    margin-bottom: 1rem;
+  }
+}
+
+// Common content class for all news sections
+.world-news-content,
+.technology-news-content,
+.business-news-content,
+.entertainment-news-content,
+.health-news-content {
+  // Any shared content styling can go here
+}
+
+// Debug styles - Add temporarily to see what's happening
+.trending-cards-container {
+  // Temporary background to see the container
+  // background: rgba(255, 0, 0, 0.1) !important;
+  // border: 2px solid red !important;
+}

@@ -1,0 +1,58 @@
+@use "../../../variables" as *;
+
+#footer {
+  .cus-border2 {
+    width: 100%;
+    padding: 0.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    img {
+      width: 100px;
+      height: 100px;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+  }
+
+  #icon-con {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+
+    & {
+      @media (max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+    }
+
+    .icons-wrapper {
+      @extend %flex-style;
+
+      span {
+        @extend %centering;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--text-color);
+        color: var(--accent-color);
+        cursor: pointer;
+        box-shadow: 0 0 8px var(--accent-color);
+        transition: color 0.3s, background 0.35s, box-shadow 0.4s,
+          transform 0.5s;
+
+        &:hover {
+          background: var(--accent-color);
+          color: var(--text-color);
+          box-shadow: 0 0 15px var(--accent-color);
+          transform: translateY(-8px);
+        }
+      }
+    }
+  }
+}

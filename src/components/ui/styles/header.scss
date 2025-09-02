@@ -1,0 +1,227 @@
+@use "../../../variables" as *;
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 18px;
+
+  .date-con {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .the-menu {
+    @extend %flex-style;
+
+    .search {
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: var(--accent-color);
+        background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0) scale(0.95);
+      }
+    }
+  }
+}
+
+.img-con {
+  width: 100%;
+  @extend %centering;
+  user-select: none;
+
+  #image {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 0 7px var(--text-color));
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+}
+
+.search-wrapper {
+  position: fixed;
+  right: 1rem;
+  top: 4rem;
+
+  /* Enhanced layout */
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-radius: 16px;
+  padding: 16px 20px;
+  background: var(--bg-color);
+  z-index: 1000;
+
+  /* Enhanced shadows and borders */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--text-color-rgb, 255, 255, 255), 0.1);
+  backdrop-filter: blur(10px);
+
+  /* Responsive width */
+  width: clamp(280px, 45vw, 450px);
+  max-width: 90vw;
+
+  /* Enhanced hidden state */
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+  pointer-events: none;
+  visibility: hidden;
+
+  /* Smooth animations */
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease,
+    visibility 0s linear 0.3s;
+
+  /* Enhanced focus state */
+  &:focus-within {
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 59, 130, 246), 0.2),
+      0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent-color);
+  }
+
+  &.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease,
+      visibility 0s;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    position: relative;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 8px 0;
+
+    &::placeholder {
+      color: rgba(var(--text-color-rgb, 255, 255, 255), 0.5);
+      font-weight: 400;
+    }
+
+    &:focus::placeholder {
+      opacity: 0.3;
+      transform: translateX(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+  }
+
+  .x-icon {
+    cursor: pointer;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+
+    /* Enhanced styling */
+    background: rgba(var(--text-color-rgb, 255, 255, 255), 0.1);
+    border: 1px solid rgba(var(--text-color-rgb, 255, 255, 255), 0.2);
+    color: rgba(var(--text-color-rgb, 255, 255, 255), 0.7);
+
+    /* Smooth transitions */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      transform: rotate(90deg) scale(1.05);
+    }
+
+    &:active {
+      transform: rotate(90deg) scale(0.95);
+    }
+
+    /* Icon styling */
+    svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.2s ease;
+    }
+  }
+}
+
+.nav-links-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .search-wrapper {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    max-width: none;
+
+    .input-wrapper {
+      gap: 8px;
+    }
+
+    input {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .search-wrapper {
+    background: rgba(var(--bg-color-rgb, 17, 24, 39), 0.95);
+
+    &:focus-within {
+      background: rgba(var(--bg-color-rgb, 17, 24, 39), 0.98);
+    }
+  }
+}
+
+/* Add subtle animation to search icon */
+.search {
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+}
