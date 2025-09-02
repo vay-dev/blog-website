@@ -20,7 +20,7 @@ const GeneralPage = () => {
 
   // Fetch data for all sections
   const { data: worldData } = useFetchNews("all", 10, "headlines");
-  const { data: technologyData } = useFetchNews("technology", 10, "headlines");
+  const { data: technologyData } = useFetchNews("tech", 10, "headlines");
   const { data: businessData } = useFetchNews("business", 10, "headlines");
   const { data: entertainmentData } = useFetchNews(
     "entertainment",
@@ -101,7 +101,7 @@ const GeneralPage = () => {
       {renderNewsSection(
         worldNews,
         "World News",
-        "/world",
+        "/technology",
         "worldnews-wrapper",
         "world-news-content"
       )}

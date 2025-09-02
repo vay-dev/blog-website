@@ -7,9 +7,13 @@ import useEmblaCarousel from "embla-carousel-react";
 
 interface TrendingCardProps {
   article: NewsArticle;
+  className?: string;
 }
 
-export const TrendingCard: React.FC<TrendingCardProps> = ({ article }) => {
+export const TrendingCard: React.FC<TrendingCardProps> = ({
+  article,
+  className,
+}) => {
   // Format time ago helper function
   const formatTimeAgo = (dateString?: string) => {
     if (!dateString) return "";
@@ -37,7 +41,7 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({ article }) => {
 
   return (
     <article
-      className="trending-card"
+      className={`trending-card ${className}`}
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
