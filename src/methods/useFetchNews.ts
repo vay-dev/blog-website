@@ -17,10 +17,21 @@ export function useFetchNews(
     error$.next(null);
 
     fetchNews({ query, pageSize, type })
-      .then((res) => setData(res))
-      .catch(() => error$.next("Error fetching news"))
+      .then((res) => {
+        if (res.status === "error") {
+          // NewsAPI returned an error object, not articles
+          error$.next(res.message || "Unknown API error");
+          setData(null);
+        } else {
+          setData(res as NewsApiResponse);
+        }
+      })
+      .catch((error) => {
+        error$.next(error.message || "Error fetching news");
+        setData(null);
+      })
       .finally(() => loading$.next(false));
-  }, [query, pageSize]);
+  }, [query, pageSize, type]);
 
   return { data };
 }

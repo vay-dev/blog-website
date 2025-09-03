@@ -4,7 +4,7 @@ import { Globe, ChevronRight, Search, X } from "lucide-react";
 import { getCurrentDate } from "../../methods/client";
 import React, { useState, useEffect, useRef } from "react";
 import CusLink from "../reuseable/link";
-import { searchTerm$ } from "../../store/store";
+import { searchTerm$, searchTermResults$ } from "../../store/store";
 
 interface CusSearchProps {
   searchTerm: string;
@@ -24,6 +24,7 @@ const CusSearch = ({ searchTerm, setSearchTerm, onClose }: CusSearchProps) => {
     setSearchTerm("");
     searchTerm$.next("");
     // Keep focus on input after clearing
+    // searchTermResults$.next(null);
     setTimeout(() => {
       inputRef.current?.focus();
     }, 0);

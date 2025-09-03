@@ -4,6 +4,7 @@ import { useFetchNews } from "../../methods/useFetchNews";
 import type { NewsArticle } from "../../interfaces/news-response.interface";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
+import EmptyState from "./empty";
 
 interface TrendingCardProps {
   article: NewsArticle;
@@ -14,7 +15,6 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({
   article,
   className,
 }) => {
-  // Format time ago helper function
   const formatTimeAgo = (dateString?: string) => {
     if (!dateString) return "";
 
@@ -34,14 +34,16 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({
   };
 
   const handleCardClick = () => {
-    if (article.url) {
+    if (article?.url) {
       window.open(article.url, "_blank", "noopener,noreferrer");
     }
   };
 
+  if (!article) return null; // 🔒 defensive
+
   return (
     <article
-      className={`trending-card ${className}`}
+      className={`trending-card ${className || ""}`}
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
@@ -51,12 +53,12 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({
           handleCardClick();
         }
       }}
-      aria-label={`Read article: ${article.title}`}
+      aria-label={`Read article: ${article.title || "Untitled"}`}
     >
       <div className="image-con">
         <img
           src={article.urlToImage || "/no-image.jpg"}
-          alt=""
+          alt={article.title || "No title"}
           className="trending-card-image"
           loading="lazy"
           onError={(e) => {
@@ -67,8 +69,11 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({
       </div>
 
       <div className="trending-card-content">
-        <h3 className="trending-card-title " title={article.title}>
-          {article.title}
+        <h3
+          className="trending-card-title "
+          title={article.title || "No title"}
+        >
+          {article.title || "Untitled"}
         </h3>
 
         <p
@@ -94,15 +99,12 @@ export const TrendingCard: React.FC<TrendingCardProps> = ({
 };
 
 const TrendingNews = () => {
-  // embla api states
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [slidesCount, setSlidesCount] = useState<number>(0);
 
-  // First ten carousel states
   const [firstTenIndex, setFirstTenIndex] = useState<number>(0);
   const [firstTenSlidesCount, setFirstTenSlidesCount] = useState<number>(0);
 
-  // embla carousel activation
   const autoplay = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
@@ -110,7 +112,6 @@ const TrendingNews = () => {
     autoplay.current,
   ]);
 
-  // second embla ref for first ten articles
   const autoplayFirstTen = useRef(
     Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
@@ -121,46 +122,41 @@ const TrendingNews = () => {
 
   const { data } = useFetchNews("latest", 100, "everything");
 
-  // method for handling embla api
+  // embla hook for full list
   useEffect(() => {
     if (!emblaApi) return;
-
     const onSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
-
     setSlidesCount(emblaApi.scrollSnapList().length);
     emblaApi.on("select", onSelect);
     onSelect();
-
     return () => {
       emblaApi.off("select", onSelect);
     };
   }, [emblaApi]);
 
-  // First ten carousel effect
+  // embla hook for first ten
   useEffect(() => {
     if (!emblaApi) return;
-
     const onSelect = () => {
       setFirstTenIndex(emblaApi.selectedScrollSnap());
     };
-
     setFirstTenSlidesCount(emblaApi.scrollSnapList().length);
     emblaApi.on("select", onSelect);
     onSelect();
-
     return () => {
       emblaApi.off("select", onSelect);
     };
   }, [emblaApi]);
 
-  // Early return AFTER all hooks have been called
-  if (!data) return <p>No news available</p>;
+  // 🔒 Defensive check
+  if (!data?.articles || data.articles.length === 0) {
+    return <EmptyState title="No Articles Found" icon="search" />;
+  }
 
-  const firstTenArticles = data.articles.slice(0, 10);
+  const firstTenArticles = data.articles.slice(0, 10).filter(Boolean);
 
-  // Navigation functions for first ten
   const scrollPrevFirstTen = () => {
     if (emblaApi) emblaApi.scrollPrev();
   };
@@ -170,7 +166,7 @@ const TrendingNews = () => {
   };
 
   const handleCardClick = (article: NewsArticle) => {
-    if (article.url) {
+    if (article?.url) {
       window.open(article.url, "_blank", "noopener,noreferrer");
     }
   };
@@ -181,16 +177,19 @@ const TrendingNews = () => {
       <div className="trending-news-container">
         <div className="embla" ref={emblaRef}>
           <div className="embla__container">
-            {data.articles.map((article, index) => (
-              <div className="embla__slide" key={index}>
-                <TrendingCard article={article} />
-              </div>
-            ))}
+            {data.articles.map(
+              (article, index) =>
+                article && (
+                  <div className="embla__slide" key={index}>
+                    <TrendingCard article={article} />
+                  </div>
+                )
+            )}
           </div>
         </div>
       </div>
 
-      {/* First ten embla ref container with controls */}
+      {/* First ten carousel */}
       <div className="first-ten-news-container mt-5 m-auto">
         <div className="first-ten-header">
           <h3 className="first-ten-title">Top Stories</h3>
@@ -200,16 +199,7 @@ const TrendingNews = () => {
               onClick={scrollPrevFirstTen}
               aria-label="Previous article"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="15,18 9,12 15,6"></polyline>
-              </svg>
+              ◀
             </button>
             <span className="first-ten-counter">
               {firstTenIndex + 1} / {firstTenSlidesCount}
@@ -219,16 +209,7 @@ const TrendingNews = () => {
               onClick={scrollNextFirstTen}
               aria-label="Next article"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="9,18 15,12 9,6"></polyline>
-              </svg>
+              ▶
             </button>
           </div>
         </div>
@@ -248,12 +229,12 @@ const TrendingNews = () => {
                     handleCardClick(article);
                   }
                 }}
-                aria-label={`Read article: ${article.title}`}
+                aria-label={`Read article: ${article.title || "Untitled"}`}
               >
                 <div className="img-con">
                   <img
                     src={article.urlToImage || "/no-image.png"}
-                    alt={article.title}
+                    alt={article.title || "No title"}
                     loading="lazy"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -262,8 +243,8 @@ const TrendingNews = () => {
                   />
                 </div>
                 <div className="content__con">
-                  <h3 className="title" title={article.title}>
-                    {article.title}
+                  <h3 className="title" title={article.title || "No title"}>
+                    {article.title || "Untitled"}
                   </h3>
                   <p
                     className="description"

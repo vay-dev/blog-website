@@ -20,7 +20,7 @@ const GeneralPage = () => {
 
   // Fetch data for all sections
   const { data: worldData } = useFetchNews("all", 10, "headlines");
-  const { data: technologyData } = useFetchNews("tech", 10, "headlines");
+  const { data: technologyData } = useFetchNews("technology", 10, "headlines");
   const { data: businessData } = useFetchNews("business", 10, "headlines");
   const { data: entertainmentData } = useFetchNews(
     "entertainment",
@@ -30,26 +30,26 @@ const GeneralPage = () => {
   const { data: healthData } = useFetchNews("health", 10, "headlines");
 
   useEffect(() => {
-    if (worldData) setWorldNews(worldData);
+    if (worldData?.articles) setWorldNews(worldData);
   }, [worldData]);
 
   useEffect(() => {
-    if (technologyData) setTechnologyNews(technologyData);
+    if (technologyData?.articles) setTechnologyNews(technologyData);
   }, [technologyData]);
 
   useEffect(() => {
-    if (businessData) setBusinessNews(businessData);
+    if (businessData?.articles) setBusinessNews(businessData);
   }, [businessData]);
 
   useEffect(() => {
-    if (entertainmentData) setEntertainmentNews(entertainmentData);
+    if (entertainmentData?.articles) setEntertainmentNews(entertainmentData);
   }, [entertainmentData]);
 
   useEffect(() => {
-    if (healthData) setHealthNews(healthData);
+    if (healthData?.articles) setHealthNews(healthData);
   }, [healthData]);
 
-  // Helper function to render a news section
+  // Helper function to render a news section safely
   const renderNewsSection = (
     sectionData: NewsApiResponse | null,
     title: string,
@@ -57,10 +57,12 @@ const GeneralPage = () => {
     wrapperID: string,
     contentClassName: string
   ) => {
-    const firstArticle = sectionData?.articles[0];
-    const remainingArticles = sectionData?.articles?.slice(1);
+    if (!sectionData?.articles || sectionData.articles.length === 0) {
+      return null;
+    }
 
-    if (!sectionData || sectionData.articles.length === 0) return null;
+    const firstArticle = sectionData.articles[0];
+    const remainingArticles = sectionData.articles.slice(1);
 
     return (
       <div id={wrapperID} className="container-fluid my-5">
@@ -78,12 +80,14 @@ const GeneralPage = () => {
             )}
 
             {/* Trending Cards - Right Side */}
-            {remainingArticles && remainingArticles.length > 0 && (
+            {remainingArticles.length > 0 && (
               <div className="col-md-4">
                 <div className="trending-cards-container">
-                  {remainingArticles.map((article, index) => (
-                    <TrendingCard key={index} article={article} />
-                  ))}
+                  {remainingArticles.map((article, index) =>
+                    article ? (
+                      <TrendingCard key={index} article={article} />
+                    ) : null
+                  )}
                 </div>
               </div>
             )}
