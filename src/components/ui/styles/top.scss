@@ -1,0 +1,32 @@
+@use "../../../variables" as *;
+
+.top-button {
+  position: fixed;
+  bottom: 5rem;
+  right: 3rem;
+  @extend %centering;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background: var(--accent-color);
+  box-shadow: 0 0 8px var(--accent-color);
+  border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(15px);
+
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  &:hover {
+    box-shadow: 0 0 15px var(--accent-color);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

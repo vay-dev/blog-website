@@ -79,9 +79,11 @@ const CusSearch = ({ searchTerm, setSearchTerm, onClose }: CusSearchProps) => {
 const HeaderComponent = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchToggle = () => {
+  const handleSearchToggle = (e: any) => {
+    e.stopPropagation();
     setIsSearchOpen(!isSearchOpen);
     if (isSearchOpen) {
       setSearchTerm("");
@@ -99,11 +101,15 @@ const HeaderComponent = () => {
     searchTermResults$.next(null);
   };
 
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         searchWrapperRef.current &&
         !searchWrapperRef.current.contains(event.target as Node) &&
+        searchButtonRef.current &&
+        !searchButtonRef.current.contains(event.target as Node) &&
         isSearchOpen
       ) {
         handleCloseSearch();
@@ -135,6 +141,18 @@ const HeaderComponent = () => {
     };
   }, [isSearchOpen]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 250);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navLinks = [
     { href: "/", label: "General" },
     { href: "/business", label: "Business" },
@@ -145,7 +163,7 @@ const HeaderComponent = () => {
 
   return (
     <div>
-      <CusBorder className="heading">
+      <CusBorder className={`heading ${isScrolled ? "fixed" : ""}`}>
         <span className="date-con">
           <Globe size={20} />
           <span>{getCurrentDate()}</span>
@@ -158,7 +176,8 @@ const HeaderComponent = () => {
           </span>
           <button
             className="search"
-            onClick={handleSearchToggle}
+            ref={searchButtonRef}
+            onClick={(e) => handleSearchToggle(e)}
             aria-label={isSearchOpen ? "Close search" : "Open search"}
             type="button"
           >
@@ -182,7 +201,7 @@ const HeaderComponent = () => {
         <img src="/vector.png" alt="Logo" className="mx-auto" id="image" />
       </div>
 
-      <CusBorder className="nav-links-wrapper">
+      <CusBorder className={`nav-links-wrapper ${isScrolled ? "fixed" : ""}`}>
         <div className="nav-links d-flex">
           {navLinks.map((link, index: number) => (
             <CusLink key={index} label={link.label} href={link.href} />

@@ -14,6 +14,7 @@ import CusFooter from "./components/ui/footer";
 import type { NewsApiResponse } from "./interfaces/news-response.interface";
 import ErrorState from "./components/ui/error";
 import SearchResultsPage from "./pages/searchResults";
+import BackToTop from "./components/ui/back-to-top";
 
 function App() {
   const [isLoading, setIsLoading] = useState(loading$.value);
@@ -82,6 +83,7 @@ function App() {
           results={debouncedTerm}
         />
       )}
+      <BackToTop />
       <CusFooter />
     </>
   );
