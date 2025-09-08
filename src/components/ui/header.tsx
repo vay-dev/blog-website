@@ -4,7 +4,11 @@ import { Globe, ChevronRight, Search, X } from "lucide-react";
 import { getCurrentDate } from "../../methods/client";
 import React, { useState, useEffect, useRef } from "react";
 import CusLink from "../reuseable/link";
-import { searchTerm$, searchTermResults$ } from "../../store/store";
+import {
+  searchTerm$,
+  searchTermResults$,
+  isSearchActive$,
+} from "../../store/store";
 
 interface CusSearchProps {
   searchTerm: string;
@@ -16,15 +20,18 @@ const CusSearch = ({ searchTerm, setSearchTerm, onClose }: CusSearchProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    searchTerm$.next(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    searchTerm$.next(value);
+    // Set search as active when there's a search term
+    isSearchActive$.next(value.length > 0);
   };
 
   const handleClear = () => {
     setSearchTerm("");
     searchTerm$.next("");
-    // Keep focus on input after clearing
-    // searchTermResults$.next(null);
+    isSearchActive$.next(false);
+    searchTermResults$.next(null);
     setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
@@ -36,11 +43,10 @@ const CusSearch = ({ searchTerm, setSearchTerm, onClose }: CusSearchProps) => {
     }
   };
 
-  // Auto-focus when component mounts
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus();
-    }, 100); // Small delay to ensure animation completes
+    }, 100);
   }, []);
 
   return (
@@ -78,9 +84,10 @@ const HeaderComponent = () => {
   const handleSearchToggle = () => {
     setIsSearchOpen(!isSearchOpen);
     if (isSearchOpen) {
-      // When closing, clear the search term
       setSearchTerm("");
       searchTerm$.next("");
+      isSearchActive$.next(false);
+      searchTermResults$.next(null);
     }
   };
 
@@ -88,9 +95,10 @@ const HeaderComponent = () => {
     setIsSearchOpen(false);
     setSearchTerm("");
     searchTerm$.next("");
+    isSearchActive$.next(false);
+    searchTermResults$.next(null);
   };
 
-  // Close search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -111,7 +119,6 @@ const HeaderComponent = () => {
     };
   }, [isSearchOpen]);
 
-  // Close search on Escape key
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isSearchOpen) {
@@ -175,7 +182,6 @@ const HeaderComponent = () => {
         <img src="/vector.png" alt="Logo" className="mx-auto" id="image" />
       </div>
 
-      {/* nav links below */}
       <CusBorder className="nav-links-wrapper">
         <div className="nav-links d-flex">
           {navLinks.map((link, index: number) => (

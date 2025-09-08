@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import HeaderComponent from "./components/ui/header";
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -7,12 +6,14 @@ import {
   error$,
   loading$,
   searchTermResults$,
+  isSearchActive$,
 } from "./store/store";
 import { useFetchNews } from "./methods/useFetchNews";
 import Loading from "./components/ui/loading";
 import CusFooter from "./components/ui/footer";
 import type { NewsApiResponse } from "./interfaces/news-response.interface";
 import ErrorState from "./components/ui/error";
+import SearchResultsPage from "./pages/searchResults";
 
 function App() {
   const [isLoading, setIsLoading] = useState(loading$.value);
@@ -20,14 +21,17 @@ function App() {
   const [debouncedTerm, setDebouncedTerm] = useState<string>("");
   const [searchTermResults, setSearchTermResults] =
     useState<NewsApiResponse | null>(null);
+  const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
 
   //  subscribe to loading state
   useEffect(() => {
     const subL = loading$.subscribe(setIsLoading);
     const subE = error$.subscribe(setError);
+    const subSA = isSearchActive$.subscribe(setIsSearchActive);
     return () => {
       subL.unsubscribe();
       subE.unsubscribe();
+      subSA.unsubscribe();
     };
   }, []);
 
@@ -40,17 +44,18 @@ function App() {
   const data = useFetchNews(debouncedTerm, 100, "everything");
 
   useEffect(() => {
-    if (data && data.data) {
+    // Only update search results if search is active and we have a search term
+    if (isSearchActive && debouncedTerm && data && data.data) {
       searchTermResults$.next(data.data);
-    } else {
+    } else if (!isSearchActive) {
+      // Clear search results when search is not active
       searchTermResults$.next(null);
     }
-  }, [debouncedTerm, data]);
+  }, [debouncedTerm, data, isSearchActive]);
 
   // subscription to getting data state
   useEffect(() => {
     const sub = searchTermResults$.subscribe(setSearchTermResults);
-
     return () => sub.unsubscribe();
   }, []);
 
@@ -66,10 +71,16 @@ function App() {
           onRetry={() => window.location.reload()}
         />
       )}
-      {!error && (
+      {!error && !searchTermResults && (
         <main className="content-wrapper">
           <Outlet />
         </main>
+      )}
+      {searchTermResults && (
+        <SearchResultsPage
+          articles={searchTermResults.articles}
+          results={debouncedTerm}
+        />
       )}
       <CusFooter />
     </>

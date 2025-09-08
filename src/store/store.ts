@@ -4,6 +4,9 @@ import type { NewsApiResponse } from "../interfaces/news-response.interface";
 // search term stream
 export const searchTerm$ = new BehaviorSubject<string>("");
 
+// search active state
+export const isSearchActive$ = new BehaviorSubject<boolean>(false);
+
 // global loading state
 export const loading$ = new BehaviorSubject<boolean>(false);
 
